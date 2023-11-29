@@ -2,6 +2,7 @@
 from pacai.agents.capture.reflex import CaptureAgent
 # import random
 # from pacai.util import util
+from pacai.core import distance
 
 # TODO: TEST TO SEE IF THE MASTER BRANCH MERGES EVERYTIME WE PUSH
 
@@ -34,6 +35,7 @@ class defensiveAgent(CaptureAgent):
         features = {}
         successor = self.getSuccessor(gameState, action)
         myState = successor.getAgentState(self.index)
+        # actions = self.getAction(gameState)
 
         # feature 1: score
         features['successorScore'] = self.getScore(successor)
@@ -56,6 +58,7 @@ class defensiveAgent(CaptureAgent):
             'distanceToFood': -1,
             # TODO: add more feature weights as needed
         }
+    
 
 # reflex capture agent ???
 class offensiveAgent(CaptureAgent):
@@ -63,6 +66,7 @@ class offensiveAgent(CaptureAgent):
         features = {}
         successor = self.getSuccessor(gameState, action)
         myState = successor.getAgentState(self.index)
+        # actions = self.getAction(gameState)
 
         # feature 1: score (negative to encourage defensive play)
         features['successorScore'] = -self.getScore(successor)
@@ -89,4 +93,8 @@ class offensiveAgent(CaptureAgent):
             'distanceToInvader': -1,
             # TODO: add more feature weights as needed
         }
-    
+
+    def DecisiveAction(self, gameState):
+
+        actions = self.getAction(gameState)
+        
