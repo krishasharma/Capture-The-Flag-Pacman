@@ -7,7 +7,8 @@ from pacai.agents.capture.reflex import CaptureAgent
 
 # TODO: do not import qulafied import THIS IS ONE OF THE CHECKS KAIA
 # IDFK WHAT TO DO I WANNA CRYYYYYY
-
+# TODO: make both agents offensive agents instead of defenisve offensive??
+# Mario test
 def createTeam(firstIndex, secondIndex, isRed,
         first = 'pacai.agents.capture.dummy.DummyAgent',
         second = 'pacai.agents.capture.dummy.DummyAgent'):
@@ -88,3 +89,4 @@ class offensiveAgent(CaptureAgent):
             'distanceToInvader': -1,
             # TODO: add more feature weights as needed
         }
+    
