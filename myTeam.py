@@ -161,6 +161,13 @@ class offensiveAgent(CaptureAgent):
         newScaredTimes = [ghostState.getScaredTimer() for ghostState in newGhostStates]
 
         CapsuleLocations = self.getCapsule(currentGameState)  # capsules on enemy team
+
+        for cap in CapsuleLocation:
+            X = manhattan(newPos, cap)
+            CapDist = [X]
+        if len(CapDist) != 0:
+            closestCapsule = min(CapDist)
+
         # initialize a score based on the current game state's score
         score = successorGameState.getScore()
         # calculate distances to the closest food pellet
