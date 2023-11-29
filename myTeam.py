@@ -84,5 +84,6 @@ class offensiveAgent(CaptureAgent):
         return {
             'successorScore': -100,
             'distanceToInvader': -1,
+            # hello
             # TODO: add more feature weights as needed
         }
