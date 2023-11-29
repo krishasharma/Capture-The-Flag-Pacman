@@ -47,6 +47,7 @@ class defensiveAgent(CaptureAgent): # defensive
         super().registerInitialState(gameState)
 
 class offensiveAgent(CaptureAgent): # offensive
+    # EHHHH
     """
     A dummy defensive agent that takes random actions.
     """
