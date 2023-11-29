@@ -100,7 +100,8 @@ class offensiveAgentBOTTOM(CaptureAgent):
             # TODO: add more feature weights as needed
         }
 
-    def DecisiveAction(self, gameState):
+    def chooseAction(self, gameState):
 
         actions = self.getAction(gameState)
-        
+
+
