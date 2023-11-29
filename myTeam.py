@@ -1,6 +1,6 @@
 # from pacai.util import reflection
 from pacai.agents.capture.reflex import CaptureAgent
-from pacai.util.probability import flipCoin
+from pacai.core.distance import manhattan
 import random
 # from pacai.util import util
 
@@ -95,23 +95,71 @@ class offensiveAgent(CaptureAgent):
             # TODO: add more feature weights as needed
         }
     
-    def chooseAction(self, gameState):
-        # chooseAction/getAction implementing qLearning 
+    def getAction(self, gameState):
         """
-        compute the action to take in the current state
+        You do not need to change this method, but you're welcome to.
 
-        returns:
-            the action to take
+        `ReflexAgent.getAction` chooses among the best options according to the evaluation function.
+
+        Just like in the previous project, this method takes a
+        `pacai.core.gamestate.AbstractGameState` and returns some value from
+        `pacai.core.directions.Directions`.
         """
+        # collect legal moves.
+        legalMoves = gameState.getLegalActions()
+        # choose one of the best actions.
+        scores = [self.evaluationFunction(gameState, action) for action in legalMoves]
+        bestScore = max(scores)
+        bestIndices = [index for index in range(len(scores)) if scores[index] == bestScore]
+        chosenIndex = random.choice(bestIndices)  # Pick randomly among the best.
+        # get action needs to return the best action as pacman
+        return legalMoves[chosenIndex]
 
-        legalActions = self.getLegalActions(gameState)
-        # if there are no legal actions
-        if not legalActions:
-            return None
-        # with probability epsilon, choose a random action
-        if flipCoin(self.epsilon):
-            return random.choice(legalActions)
-        else:
-            # otherwise, choose the action with the maximum Q-value
-            return self.getPolicy(gameState)
+    def evaluationFunction(self, currentGameState, action):
+        """
+        Design a better evaluation function here.
+
+        The evaluation function takes in the current `pacai.bin.pacman.PacmanGameState`
+        and an action, and returns a number, where higher numbers are better.
+        Make sure to understand the range of different values before you combine them
+        in your evaluation function.
+        """
+        # Useful information you can extract.
+        # newPosition = successorGameState.getPacmanPosition()
+        # oldFood = currentGameState.getFood()
+        # newGhostStates = successorGameState.getGhostStates()
+        # newScaredTimes = [ghostState.getScaredTimer() for ghostState in newGhostStates]
+
+        # *** Your Code Here ***
+        # generate the successor game state
+        # after taking in the action that was specificed
+        successorGameState = currentGameState.generatePacmanSuccessor(action)
+        newPos = successorGameState.getPacmanPosition()
+        newFood = successorGameState.getFood()
+        newGhostStates = successorGameState.getGhostStates()
+        # getScaredTime is the time
+        newScaredTimes = [ghostState.getScaredTimer() for ghostState in newGhostStates]
+        # initialize a score based on the current game state's score
+        score = successorGameState.getScore()
+        # calculate distances to the closest food pellet
+        foodDistances = [manhattan(newPos, food) for food in newFood.asList()]
+        if foodDistances:
+            closestFoodDistance = min(foodDistances)
+            # add a positive score for being closer to the food
+            # the reciprocal of the distance is used here???
+            score += 1.0 / closestFoodDistance
+        # avoid ghosts if they are not scared, and approach them if they are
+        for ghost, scaredTime in zip(newGhostStates, newScaredTimes):
+            ghostPos = ghost.getPosition()
+            # if a ghost is too close, and not scared
+            # then aviod it (negative score?)
+            if scaredTime == 0 and manhattan(newPos, ghostPos) < 2:
+                score -= 1000  # strongly avoid ghosts
+            # if a ghost is too close and scared
+            # approach it (positive score)
+            elif scaredTime > 0 and manhattan(newPos, ghostPos) < 2:
+                score += 500  # approach scared ghosts
+        return score
+
+        return successorGameState.getScore()
 
