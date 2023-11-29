@@ -3,6 +3,8 @@ from pacai.agents.capture.reflex import CaptureAgent
 # import random
 # from pacai.util import util
 
+# TODO: TEST TO SEE IF THE MASTER BRANCH MERGES EVERYTIME WE PUSH
+
 # TODO: do not import qulafied import THIS IS ONE OF THE CHECKS KAIA
 # IDFK WHAT TO DO I WANNA CRYYYYYY
 
