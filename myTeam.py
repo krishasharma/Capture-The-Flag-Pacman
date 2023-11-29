@@ -89,3 +89,4 @@ class offensiveAgent(CaptureAgent):
             'distanceToInvader': -1,
             # TODO: add more feature weights as needed
         }
+    
