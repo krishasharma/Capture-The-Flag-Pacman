@@ -102,7 +102,6 @@ class offensiveAgent(CaptureAgent):
         returns:
             the action to take
         """
-
         legalActions = self.getLegalActions(gameState)
         # if there are no legal actions
         if not legalActions:
@@ -111,16 +110,9 @@ class offensiveAgent(CaptureAgent):
         if flipCoin(self.epsilon):
             return random.choice(legalActions)
         else:
-<<<<<<< HEAD
             # otherwise, choose the action with the maximum Q-value
             return self.getPolicy(gameState)
-        return super().chooseAction(gameState)
-=======
             features['distanceToInvader'] = 0  # no invaders, no penalty
-
-        # TODO: add more features here based on defensive strategy
-
-        return features
 
     def getWeights(self, gameState, action):
         # define weights for features
@@ -130,10 +122,3 @@ class offensiveAgent(CaptureAgent):
             'distanceToInvader': -1,
             # TODO: add more feature weights as needed
         }
-
-    def chooseAction(self, gameState):
-
-        actions = self.getAction(gameState)
-
-
->>>>>>> refs/remotes/origin/main
