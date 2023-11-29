@@ -96,6 +96,7 @@ class offensiveAgent(CaptureAgent):
         }
     
     def chooseAction(self, gameState):
+        # chooseAction/getAction implementing qLearning 
         """
         compute the action to take in the current state
 
@@ -111,29 +112,6 @@ class offensiveAgent(CaptureAgent):
         if flipCoin(self.epsilon):
             return random.choice(legalActions)
         else:
-<<<<<<< HEAD
             # otherwise, choose the action with the maximum Q-value
             return self.getPolicy(gameState)
-        return super().chooseAction(gameState)
-=======
-            features['distanceToInvader'] = 0  # no invaders, no penalty
 
-        # TODO: add more features here based on defensive strategy
-
-        return features
-
-    def getWeights(self, gameState, action):
-        # define weights for features
-        # adjust these values to reflect defensive strategy
-        return {
-            'successorScore': -100,
-            'distanceToInvader': -1,
-            # TODO: add more feature weights as needed
-        }
-
-    def chooseAction(self, gameState):
-
-        actions = self.getAction(gameState)
-
-
->>>>>>> refs/remotes/origin/main
