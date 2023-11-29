@@ -1,13 +1,19 @@
 # from pacai.util import reflection
 from pacai.agents.capture.reflex import CaptureAgent
-# import random
+from pacai.util.probability import flipCoin
+import random
 # from pacai.util import util
-from pacai.core import distance
 
 # TODO: do not import qulafied import THIS IS ONE OF THE CHECKS KAIA
 # IDFK WHAT TO DO I WANNA CRYYYYYY
 # TODO: make both agents offensive agents instead of defenisve offensive??
-# Mario test
+# TODO: implement getAction 
+# TODO: implement getCapsule (getFood is a method we have access too)
+# TODO: use getScore as a check to see how we're doing in the match; if we're doing really 
+# well consider switching to full defense? else stick with offense? 
+# would this change the chooseAction function? as in if the score is high it needs to pick 
+# an action that is defensive rather than offensive
+
 def createTeam(firstIndex, secondIndex, isRed,
         first = 'pacai.agents.capture.dummy.DummyAgent',
         second = 'pacai.agents.capture.dummy.DummyAgent'):
@@ -23,20 +29,45 @@ def createTeam(firstIndex, secondIndex, isRed,
     # secondAgent = reflection.qualifiedImport(second)
 
     return [
-        # split the grid top and bottom; one agent handles top, one bottom
-        offensiveAgentTOP(firstIndex),
-        offensiveAgentBOTTOM(secondIndex),
+        defensiveAgent(firstIndex),
+        offensiveAgent(secondIndex),
     ]
 
 # reflex capture agent ???
-# TODO: change this to match the offensive agent? (only if we wanna have two offensive agents)
-# agent for top
-class offensiveAgentTOP(CaptureAgent):
+class defensiveAgent(CaptureAgent):
     def getFeatures(self, gameState, action):
         features = {}
         successor = self.getSuccessor(gameState, action)
         myState = successor.getAgentState(self.index)
-        # actions = self.getAction(gameState)
+
+        # feature 1: score
+        features['successorScore'] = self.getScore(successor)
+
+        # feature 2: distance to nearest food
+        foodList = self.getFood(successor).asList()
+        if len(foodList) > 0:
+            myPos = myState.getPosition()
+            minDistance = min([self.getMazeDistance(myPos, food) for food in foodList])
+            features['distanceToFood'] = minDistance
+
+        # TODO: add more features here based on strategy
+        return features
+
+    def getWeights(self, gameState, action):
+        # define weights for features 
+        # adjust these values to reflect strategy
+        return {
+            'successorScore': 100,
+            'distanceToFood': -1,
+            # TODO: add more feature weights as needed
+        }
+
+# reflex capture agent ???
+class offensiveAgent(CaptureAgent):
+    def getFeatures(self, gameState, action):
+        features = {}
+        successor = self.getSuccessor(gameState, action)
+        myState = successor.getAgentState(self.index)
 
         # feature 1: score (negative to encourage defensive play)
         features['successorScore'] = -self.getScore(successor)
@@ -64,43 +95,22 @@ class offensiveAgentTOP(CaptureAgent):
             # TODO: add more feature weights as needed
         }
     
+    def chooseAction(self, gameState):
+        """
+        compute the action to take in the current state
 
-# reflex capture agent ???
-# agent for bottom of grid
-class offensiveAgentBOTTOM(CaptureAgent):
-    def getFeatures(self, gameState, action):
-        features = {}
-        successor = self.getSuccessor(gameState, action)
-        myState = successor.getAgentState(self.index)
-        # actions = self.getAction(gameState)
+        returns:
+            the action to take
+        """
 
-        # feature 1: score (negative to encourage defensive play)
-        features['successorScore'] = -self.getScore(successor)
-
-        # feature 2: distance to nearest invader
-        opponents = self.getOpponents(successor)
-        invaders = [successor.getAgentState(i) for i in opponents if successor.getAgentState(i).isPacman]
-        if len(invaders) > 0:
-            myPos = myState.getPosition()
-            minDistance = min([self.getMazeDistance(myPos, invader.getPosition()) for invader in invaders])
-            features['distanceToInvader'] = minDistance
+        legalActions = self.getLegalActions(gameState)
+        # if there are no legal actions
+        if not legalActions:
+            return None
+        # with probability epsilon, choose a random action
+        if flipCoin(self.epsilon):
+            return random.choice(legalActions)
         else:
-            features['distanceToInvader'] = 0  # no invaders, no penalty
-
-        # TODO: add more features here based on defensive strategy
-
-        return features
-
-    def getWeights(self, gameState, action):
-        # define weights for features
-        # adjust these values to reflect defensive strategy
-        return {
-            'successorScore': -100,
-            'distanceToInvader': -1,
-            # TODO: add more feature weights as needed
-        }
-
-    def DecisiveAction(self, gameState):
-
-        actions = self.getAction(gameState)
-        
+            # otherwise, choose the action with the maximum Q-value
+            return self.getPolicy(gameState)
+        return super().chooseAction(gameState)
