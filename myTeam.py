@@ -4,8 +4,6 @@ from pacai.agents.capture.reflex import CaptureAgent
 # from pacai.util import util
 from pacai.core import distance
 
-# TODO: TEST TO SEE IF THE MASTER BRANCH MERGES EVERYTIME WE PUSH
-
 # TODO: do not import qulafied import THIS IS ONE OF THE CHECKS KAIA
 # IDFK WHAT TO DO I WANNA CRYYYYYY
 # TODO: make both agents offensive agents instead of defenisve offensive??
@@ -25,43 +23,51 @@ def createTeam(firstIndex, secondIndex, isRed,
     # secondAgent = reflection.qualifiedImport(second)
 
     return [
-        defensiveAgent(firstIndex),
-        offensiveAgent(secondIndex),
+        # split the grid top and bottom; one agent handles top, one bottom
+        offensiveAgentTOP(firstIndex),
+        offensiveAgentBOTTOM(secondIndex),
     ]
 
 # reflex capture agent ???
-class defensiveAgent(CaptureAgent):
+# TODO: change this to match the offensive agent? (only if we wanna have two offensive agents)
+# agent for top
+class offensiveAgentTOP(CaptureAgent):
     def getFeatures(self, gameState, action):
         features = {}
         successor = self.getSuccessor(gameState, action)
         myState = successor.getAgentState(self.index)
         # actions = self.getAction(gameState)
 
-        # feature 1: score
-        features['successorScore'] = self.getScore(successor)
+        # feature 1: score (negative to encourage defensive play)
+        features['successorScore'] = -self.getScore(successor)
 
-        # feature 2: distance to nearest food
-        foodList = self.getFood(successor).asList()
-        if len(foodList) > 0:
+        # feature 2: distance to nearest invader
+        opponents = self.getOpponents(successor)
+        invaders = [successor.getAgentState(i) for i in opponents if successor.getAgentState(i).isPacman]
+        if len(invaders) > 0:
             myPos = myState.getPosition()
-            minDistance = min([self.getMazeDistance(myPos, food) for food in foodList])
-            features['distanceToFood'] = minDistance
+            minDistance = min([self.getMazeDistance(myPos, invader.getPosition()) for invader in invaders])
+            features['distanceToInvader'] = minDistance
+        else:
+            features['distanceToInvader'] = 0  # no invaders, no penalty
 
-        # TODO: add more features here based on strategy
+        # TODO: add more features here based on defensive strategy
+
         return features
 
     def getWeights(self, gameState, action):
-        # define weights for features 
-        # adjust these values to reflect strategy
+        # define weights for features
+        # adjust these values to reflect defensive strategy
         return {
-            'successorScore': 100,
-            'distanceToFood': -1,
+            'successorScore': -100,
+            'distanceToInvader': -1,
             # TODO: add more feature weights as needed
         }
     
 
 # reflex capture agent ???
-class offensiveAgent(CaptureAgent):
+# agent for bottom of grid
+class offensiveAgentBOTTOM(CaptureAgent):
     def getFeatures(self, gameState, action):
         features = {}
         successor = self.getSuccessor(gameState, action)
