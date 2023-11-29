@@ -6,3 +6,5 @@ myTeam.py-- for the first check there are two implemented classes for DummyAgent
 
 secondCheck
 myTeam.py-- in progress
+
+i hate coding so fucking much 
