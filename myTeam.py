@@ -1,9 +1,10 @@
 # from pacai.util import reflection
 from pacai.agents.capture.reflex import CaptureAgent
-import random
+# import random
 # from pacai.util import util
 
 # TODO: do not import qulafied import THIS IS ONE OF THE CHECKS KAIA
+# IDFK WHAT TO DO I WANNA CRYYYYYY
 
 def createTeam(firstIndex, secondIndex, isRed,
         first = 'pacai.agents.capture.dummy.DummyAgent',
@@ -24,48 +25,64 @@ def createTeam(firstIndex, secondIndex, isRed,
         offensiveAgent(secondIndex),
     ]
 
-class defensiveAgent(CaptureAgent): # defensive
-    """
-    A dummy agent that takes random actions.
-    """
-    def __init__(self, index, **kwargs):
-        super().__init__(index, **kwargs)
-        self.index = index
+# reflex capture agent ???
+class defensiveAgent(CaptureAgent):
+    def getFeatures(self, gameState, action):
+        features = {}
+        successor = self.getSuccessor(gameState, action)
+        myState = successor.getAgentState(self.index)
 
-    def chooseAction(self, gameState):
-        legalActions = gameState.getLegalActions(self.index)
-        return random.choice(legalActions)
+        # feature 1: score
+        features['successorScore'] = self.getScore(successor)
 
-    def registerInitialState(self, gameState):
-        """
-        This method handles the initial setup of the agent and populates useful fields,
-        such as the team the agent is on and the `pacai.core.distanceCalculator.Distancer`.
+        # feature 2: distance to nearest food
+        foodList = self.getFood(successor).asList()
+        if len(foodList) > 0:
+            myPos = myState.getPosition()
+            minDistance = min([self.getMazeDistance(myPos, food) for food in foodList])
+            features['distanceToFood'] = minDistance
 
-        IMPORTANT: If this method runs for more than 15 seconds, your agent will time out.
-        """
+        # TODO: add more features here based on strategy
+        return features
 
-        super().registerInitialState(gameState)
+    def getWeights(self, gameState, action):
+        # define weights for features 
+        # adjust these values to reflect strategy
+        return {
+            'successorScore': 100,
+            'distanceToFood': -1,
+            # TODO: add more feature weights as needed
+        }
 
-class offensiveAgent(CaptureAgent): # offensive
-    """
-    A dummy defensive agent that takes random actions.
-    """
-    def __init__(self, index, **kwargs):
-        super().__init__(index, **kwargs)
-        self.index = index
+# reflex capture agent ???
+class offensiveAgent(CaptureAgent):
+    def getFeatures(self, gameState, action):
+        features = {}
+        successor = self.getSuccessor(gameState, action)
+        myState = successor.getAgentState(self.index)
 
-    def chooseAction(self, gameState):
-        legalActions = gameState.getLegalActions(self.index)
-        return random.choice(legalActions)
+        # feature 1: score (negative to encourage defensive play)
+        features['successorScore'] = -self.getScore(successor)
 
-    def registerInitialState(self, gameState):
-        """
-        This method handles the initial setup of the agent and populates useful fields,
-        such as the team the agent is on and the `pacai.core.distanceCalculator.Distancer`.
+        # feature 2: distance to nearest invader
+        opponents = self.getOpponents(successor)
+        invaders = [successor.getAgentState(i) for i in opponents if successor.getAgentState(i).isPacman]
+        if len(invaders) > 0:
+            myPos = myState.getPosition()
+            minDistance = min([self.getMazeDistance(myPos, invader.getPosition()) for invader in invaders])
+            features['distanceToInvader'] = minDistance
+        else:
+            features['distanceToInvader'] = 0  # no invaders, no penalty
 
-        IMPORTANT: If this method runs for more than 15 seconds, your agent will time out.
-        """
+        # TODO: add more features here based on defensive strategy
 
-        super().registerInitialState(gameState)
+        return features
 
-
+    def getWeights(self, gameState, action):
+        # define weights for features
+        # adjust these values to reflect defensive strategy
+        return {
+            'successorScore': -100,
+            'distanceToInvader': -1,
+            # TODO: add more feature weights as needed
+        }
