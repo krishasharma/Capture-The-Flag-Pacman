@@ -160,6 +160,10 @@ class offensiveAgent(CaptureAgent):
         # getScaredTime is the time
         newScaredTimes = [ghostState.getScaredTimer() for ghostState in newGhostStates]
 
+        # initialize a score based on the current game state's score
+        score = successorGameState.getScore()
+
+        # capsule distance math
         CapsuleLocations = self.getCapsule(currentGameState)  # capsules on enemy team
 
         for cap in CapsuleLocation:
@@ -167,26 +171,28 @@ class offensiveAgent(CaptureAgent):
             CapDist = [X]
         if len(CapDist) != 0:
             closestCapsule = min(CapDist)
+            # score += 100.0 / closestCapsule
 
-        # initialize a score based on the current game state's score
-        score = successorGameState.getScore()
         # calculate distances to the closest food pellet
         foodDistances = [manhattan(newPos, food) for food in newFood.asList()]
         if foodDistances:
             closestFoodDistance = min(foodDistances)
             # add a positive score for being closer to the food
             # the reciprocal of the distance is used here???
-            score += 1.0 / closestFoodDistance
+            if closestCapsule < 2: 
+                score += 200
+            else:
+                score += 1.0 / closestFoodDistance
         # avoid ghosts if they are not scared, and approach them if they are
         for ghost, scaredTime in zip(newGhostStates, newScaredTimes):
             ghostPos = ghost.getPosition()
             # if a ghost is too close, and not scared
             # then aviod it (negative score?)
-            if scaredTime == 0 and manhattan(newPos, ghostPos) < 2:
+            if (scaredTime == 0) and (manhattan(newPos, ghostPos) < 2):
                 score -= 1000  # strongly avoid ghosts
             # if a ghost is too close and scared
             # approach it (positive score)
-            elif scaredTime > 0 and manhattan(newPos, ghostPos) < 2:
+            elif (scaredTime > 0) and (manhattan(newPos, ghostPos) < 2):
                 score += 500  # approach scared ghosts
         return score
 
