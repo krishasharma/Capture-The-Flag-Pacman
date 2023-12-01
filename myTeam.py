@@ -205,3 +205,14 @@ class offensiveAgent(CaptureAgent):
 
         # return successorGameState.getScore()
 
+    def Swap(self, gameState):
+
+        # if points too low, then change to full attack
+        # if points high then attack
+
+        scoreDiff = self.getScore(gameState)
+        if (scoreDiff <= 10):  # if tie or losing or only small lead
+            # change to attack
+        elif (scoreDiff > 10):
+            # change to deffense
+
