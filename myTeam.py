@@ -14,6 +14,11 @@ import random
 # would this change the chooseAction function? as in if the score is high it needs to pick 
 # an action that is defensive rather than offensive
 
+
+# possible solution of deciding attack: amount of points, if too low, send everyone 
+# have a function to alternate classes ( def/attack) 
+# 
+
 def createTeam(firstIndex, secondIndex, isRed,
         first = 'pacai.agents.capture.dummy.DummyAgent',
         second = 'pacai.agents.capture.dummy.DummyAgent'):
@@ -166,7 +171,7 @@ class offensiveAgent(CaptureAgent):
         # capsule distance math
         CapsuleLocations = self.getCapsule(currentGameState)  # capsules on enemy team
 
-        for cap in CapsuleLocation:
+        for cap in CapsuleLocations:
             X = manhattan(newPos, cap)
             CapDist = [X]
         if len(CapDist) != 0:
