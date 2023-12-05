@@ -14,7 +14,6 @@ import random
 # would this change the chooseAction function? as in if the score is high it needs to pick 
 # an action that is defensive rather than offensive
 
-
 # possible solution of deciding attack: amount of points, if too low, send everyone 
 # have a function to alternate classes ( def/attack) 
 # 
@@ -34,6 +33,7 @@ def createTeam(firstIndex, secondIndex, isRed,
     # secondAgent = reflection.qualifiedImport(second)
 
     return [
+        # do swap here
         defensiveAgent(firstIndex),
         offensiveAgent(secondIndex),
     ]
@@ -88,51 +88,43 @@ class defensiveAgent(CaptureAgent):
         # after taking in the action that was specificed
         successorGameState = currentGameState.generatePacmanSuccessor(action)
         newPos = successorGameState.getPacmanPosition()
-        newFood = successorGameState.getFood()
-        newGhostStates = successorGameState.getGhostStates()
+        # newFood = successorGameState.getFood()
+        # newGhostStates = successorGameState.getGhostStates()
         # getScaredTime is the time
-        newScaredTimes = [ghostState.getScaredTimer() for ghostState in newGhostStates]
+        # newScaredTimes = [ghostState.getScaredTimer() for ghostState in newGhostStates]
+
+
 
         # initialize a score based on the current game state's score
         score = successorGameState.getScore()
 
-        # capsule distance math
-        CapsuleLocations = self.getCapsule(currentGameState)  # capsules on enemy team
+        # get opponent state
+        # get food of your team 
+        # get capsule of your team
+        # get distance of opponent to defense food/capsule
+        # calculate your distance to enemy 
 
-        for cap in CapsuleLocations:
-            X = manhattan(newPos, cap)
-            CapDist = [X]
-        if len(CapDist) != 0:
-            closestCapsule = min(CapDist)
-            # score += 100.0 / closestCapsule
 
-        # calculate distances to the closest food pellet
-        foodDistances = [manhattan(newPos, food) for food in newFood.asList()]
-        if foodDistances:
-            closestFoodDistance = min(foodDistances)
-            # add a positive score for being closer to the food
-            # the reciprocal of the distance is used here???
-            if closestCapsule < 2: 
-                score += 200
-            else:
-                score += 1.0 / closestFoodDistance
-        # avoid ghosts if they are not scared, and approach them if they are
-        for ghost, scaredTime in zip(newGhostStates, newScaredTimes):
-            ghostPos = ghost.getPosition()
-            # if a ghost is too close, and not scared
-            # then aviod it (negative score?)
-            if (scaredTime == 0) and (manhattan(newPos, ghostPos) < 2):
-                score -= 1000  # strongly avoid ghosts
-            # if a ghost is too close and scared
-            # approach it (positive score)
-            elif (scaredTime > 0) and (manhattan(newPos, ghostPos) < 2):
-                score += 500  # approach scared ghosts
+
         return score
 
         #TODO get cpasules and evaluate them 
 
         # return successorGameState.getScore()
 
+    # def Swap(self, gameState):
+
+    #     # if points too low, then change to full attack
+    #     # if points high then attack
+
+    #     scoreDiff = self.getScore(gameState)
+    #     if (scoreDiff <= 10):  # if tie or losing or only small lead
+    #         # change to attack
+    #         pass
+    #     elif (scoreDiff > 10):
+    #         # change to defense
+    #         pass
+        
 
 # reflex capture agent ???
 class offensiveAgent(CaptureAgent):
@@ -187,7 +179,6 @@ class offensiveAgent(CaptureAgent):
         else:
             # otherwise, choose the action with the maximum Q-value
             return self.getPolicy(gameState)
-            features['distanceToInvader'] = 0  # no invaders, no penalty
 
     def getWeights(self, gameState, action):
         # define weights for features
@@ -272,14 +263,14 @@ class offensiveAgent(CaptureAgent):
 
         # return successorGameState.getScore()
 
-    def Swap(self, gameState):
+    # def Swap(self, gameState):
 
-        # if points too low, then change to full attack
-        # if points high then attack
+    #     # if points too low, then change to full attack
+    #     # if points high then attack
 
-        scoreDiff = self.getScore(gameState)
-        if (scoreDiff <= 10):  # if tie or losing or only small lead
-            # change to attack
-        elif (scoreDiff > 10):
-            # change to defense
+    #     scoreDiff = self.getScore(gameState)
+    #     if (scoreDiff <= 10):  # if tie or losing or only small lead
+    #         # change to attack
+    #     elif (scoreDiff > 10):
+    #         # change to defense
 
