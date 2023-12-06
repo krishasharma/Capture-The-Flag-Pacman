@@ -97,6 +97,9 @@ class defensiveAgent(CaptureAgent):
 
         # initialize a score based on the current game state's score
         score = successorGameState.getScore()
+        CapDef = currentGameState.getCapsulesYouAreDefending()
+
+        
 
         # get opponent state
         # get food of your team 
@@ -242,7 +245,7 @@ class offensiveAgent(CaptureAgent):
             closestFoodDistance = min(foodDistances)
             # add a positive score for being closer to the food
             # the reciprocal of the distance is used here???
-            if closestCapsule < 2: 
+            if closestCapsule < 10: 
                 score += 200
             else:
                 score += 1.0 / closestFoodDistance
